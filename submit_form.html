@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang= "en">
+<head>
+    <meta charset = "UTF-8">
+    <meta name = "viewport" content = "width=device-width">
+    <title>Project</title>
+
+    <style>
+        body {
+            font-family: Courier, monospace;
+            text-align: center;
+        }
+        /* Add some basic styling for the form */
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Style for input fields */
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+            resize: vertical; /* Allow vertical resizing of the textarea */
+        }
+
+        /* Style for the larger input field */
+        #body {
+            height: 400px; /* Adjust the height as needed */
+        }
+
+        button {
+            padding: 10px;
+        }
+        </style>
+</head>
+<body>
+
+    <h1>
+        Submit form
+    </h1>
+    <a href="/">Home Page</a>
+
+    <form action="/submit_form" method="post">
+        <label for="TITLE">TITLE:</label>
+        <input type="text" id="title" name="title" required>
+
+        <label for="body">BODY:</label>
+        <textarea type="text" id="body" name="body" required></textarea>
+        <button type="submit">Submit</button>
+    </form>
+
+</body>
+</html>
