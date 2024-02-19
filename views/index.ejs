@@ -28,6 +28,18 @@
     <form action="/logData" method="get">
         <button type="submit">Log Data</button>
     </form>
+    <div>
+        <h2>Tickets</h2>
+        <% if (tickets) { %>
+            <ul>
+            <% tickets.forEach(ticket => { %>
+                <li><%= ticket.title %> - <%= ticket.body %></li>
+            <% }); %>
+            </ul>
+        <% } else { %>
+            <p>No tickets</p>
+        <% } %>
+      </div>
 
 </body>
 </html>

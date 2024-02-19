@@ -38,9 +38,26 @@ db.run('CREATE TABLE IF NOT EXISTS users (id INT, username TEXT, password TEXT)'
 
 //this just makes hyperlinks work, idk i think it should probably be in a class or something but I'm too lazy
 //there most likely exists a much cleaner way to do this
+
+//this one needs all of this so that it can send the users tickets to the ejs
 app.get('/', async (request, response) => 
 {
-    response.render('index', { user: request.session.userId });
+    const username = request.session.userId;
+    console.log(username);
+    db.all('Select * FROM tickets where user = ?', [username], (err, results) =>
+    {
+        if(err)
+        {
+            console.error('Error fetching complaints:', err);
+            response.status(500).send('Internal Server Error');
+            return;
+        }
+        else
+        {
+            console.log('Data from the "tickets" table with logged in user:', results);
+            response.render('index', { user: request.session.userId, tickets: results });
+        }
+    });
 });
 app.get('/submit_form.html', async (request, response) => 
 {
