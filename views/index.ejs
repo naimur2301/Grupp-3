@@ -17,7 +17,13 @@
     <h1>
         HOME
     </h1>
-    <a href="/login.html">login</a>
+    <nav>
+        <% if (user) { %>
+            <p> Logged in as <%= user %>  <a href="/logout">logout</a></p>
+        <% } else { %>
+            <a href="/login.html">Login</a>
+        <% } %>
+    </nav>
     <a href="/submit_form.html">submit form</a>
     <form action="/logData" method="get">
         <button type="submit">Log Data</button>
