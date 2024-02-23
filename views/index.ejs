@@ -6,10 +6,28 @@
     <title>Project</title>
 
     <style>
+
+        .container {
+        display: flex;
+        justify-content: center;
+        }
+
         body {
             font-family: Courier, monospace;
             text-align: center;
         }
+
+        .cool-box {
+            width: 200px; /* Set your desired width */
+            height: 350px; /* Set your desired height */
+            margin: 10px; /* Add margin for spacing between boxes */
+            border: 1px solid #aba0a0;
+            background-color: #e3e9ec; /* Box background color */
+            color: #000000; /* Text color */
+            padding: 20px; /* Padding inside the box */
+            border-radius: 10px; /* Rounded corners */
+            text-align: center;
+}
         </style>
 </head>
 <body>
@@ -32,9 +50,15 @@
         <h2>Tickets</h2>
         <% if (tickets) { %>
             <ul>
-            <% tickets.forEach(ticket => { %>
-                <li><%= ticket.title %> - <%= ticket.body %></li>
-            <% }); %>
+            <div class = container>
+                <% tickets.forEach(ticket => { %>
+                        <div class="cool-box">
+                            <p><%= ticket.title %></p>
+                            <hr>
+                            <p><%= ticket.body %></p>
+                        </div>
+                <% }); %>
+            </div>
             </ul>
         <% } else { %>
             <p>No tickets</p>

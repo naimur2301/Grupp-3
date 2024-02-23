@@ -102,7 +102,6 @@ app.get('/logData', (req, res) =>
 //logs in, need to make sure this actually remembers who's logged in, pipe it to the tickets database later
 app.post('/login', (request, response) => 
 {
-    // Access form data from request.body
     const username = request.body.username;
     const password = request.body.password;
     db.get('SELECT * FROM users WHERE username = ?', [username], (err, row) => 
@@ -137,7 +136,6 @@ app.post('/login', (request, response) =>
 //register function, kind of broken
 app.post('/register', (request, response) => 
 {
-    // Access form data from request.body
     const username = request.body.username;
     const password = request.body.password;
 
@@ -165,9 +163,7 @@ app.post('/register', (request, response) =>
                 }
                 console.log(`A row has been inserted with rowid ${this.lastID}`);
             });
-            // Process the form data (you can save it to a database or perform other actions)
             console.log('Submitted data:', { username, password });
-            // Redirect back to the home page or display a thank you message
             response.redirect('/');
         }
     })
@@ -189,10 +185,7 @@ app.post('/submit_form', (request, response) =>
         }
         console.log(`A row has been inserted with rowid ${this.lastID}`);
     });
-    // Process the form data (you can save it to a database or perform other actions)
     console.log('Submitted data:', {title, body });
-
-    // Redirect back to the home page or display a thank you message
     response.redirect('/');
 });
 
