@@ -56,6 +56,9 @@
                             <p><%= ticket.title %></p>
                             <hr>
                             <p><%= ticket.body %></p>
+                            <% if (ticket.image) { %>
+                            <img src="data:image/jpeg;base64, <%= Buffer.from(ticket.image).toString('base64') %>" alt="Description of the image" height = "200" >
+                            <% } %>
                         </div>
                 <% }); %>
             </div>

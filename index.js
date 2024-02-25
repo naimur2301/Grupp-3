@@ -1,5 +1,4 @@
 //Erik was here
-
 //dependencies
 const express = require('express');
 const app = express();
@@ -7,7 +6,8 @@ const sqlite3 = require('sqlite3').verbose();
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const {readFile} = require('fs').promises;
-
+const multer = require('multer');
+const upload = multer();
 
 //local database for testing
 const db = new sqlite3.Database('mydatabase.db');
@@ -31,10 +31,11 @@ app.set('view engine', 'ejs');
 
 
 //database table for complaints
-db.run('CREATE TABLE IF NOT EXISTS tickets (id INT, user TEXT , title TEXT, body TEXT)');
+db.run('CREATE TABLE IF NOT EXISTS tickets (id INT AUTO_INCREMENT PRIMARY KEY, email text, title TEXT, image BLOB, body TEXT)');
 //database table for users
-db.run('CREATE TABLE IF NOT EXISTS users (id INT, username TEXT, password TEXT)');
-
+db.run('CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, email TEXT, lgh TEXT, building TEXT, password TEXT, admin INT)');
+db.run('CREATE TABLE IF NOT EXISTS admin (id INT AUTO_INCREMENT PRIMARY KEY, email TEXT,  lgh_group INT, password TEXT)');
+db.run('CREATE TABLE IF NOT EXISTS worker (id INT AUTO_INCREMENT PRIMARY KEY, email TEXT,  lgh_group INT, password TEXT)');
 
 //this just makes hyperlinks work, idk i think it should probably be in a class or something but I'm too lazy
 //there most likely exists a much cleaner way to do this
@@ -42,9 +43,9 @@ db.run('CREATE TABLE IF NOT EXISTS users (id INT, username TEXT, password TEXT)'
 //this one needs all of this so that it can send the users tickets to the ejs
 app.get('/', async (request, response) => 
 {
-    const username = request.session.userId;
-    console.log(username);
-    db.all('Select * FROM tickets where user = ?', [username], (err, results) =>
+    const email = request.session.userId;
+    console.log(email);
+    db.all('Select * FROM tickets where email = ?', [email], (err, results) =>
     {
         if(err)
         {
@@ -76,7 +77,6 @@ app.get('/create_account.html', async (request, response) =>
     response.send(await readFile('./create_account.html', 'utf8'));
 });
 
-
 //function to log a user out 
 app.get('/logout', (req, res) => 
 {
@@ -102,9 +102,10 @@ app.get('/logData', (req, res) =>
 //logs in, need to make sure this actually remembers who's logged in, pipe it to the tickets database later
 app.post('/login', (request, response) => 
 {
-    const username = request.body.username;
+
+    const email = request.body.email;
     const password = request.body.password;
-    db.get('SELECT * FROM users WHERE username = ?', [username], (err, row) => 
+    db.get('SELECT * FROM users WHERE email = ?', [email], (err, row) => 
     {
         if (err) 
         {
@@ -116,7 +117,7 @@ app.post('/login', (request, response) =>
             console.log('Found user:', row);
             if(row.password == password)
             {
-                request.session.userId = row.username;
+                request.session.userId = row.email;
                 response.redirect('/');
             }
             else
@@ -136,10 +137,12 @@ app.post('/login', (request, response) =>
 //register function, kind of broken
 app.post('/register', (request, response) => 
 {
-    const username = request.body.username;
     const password = request.body.password;
+    const email = request.body.email;
+    const lgh = request.body.lgh;
+    const building = request.body.building;
 
-    db.get('SELECT * FROM users WHERE username = ?', [username], (err, row) => 
+    db.get('SELECT * FROM users WHERE email = ?', [email], (err, row) => 
     {
         if (err) 
         {
@@ -155,7 +158,7 @@ app.post('/register', (request, response) =>
         } else 
         {
             console.log('User not found');
-            db.run('INSERT INTO users (username, password) VALUES (?, ?)', [username, password], function (err) 
+            db.run('INSERT INTO users (password, email, lgh, building) VALUES (?, ?, ?, ?)', [password, email, lgh, building], function (err) 
             {
                 if (err) 
                 {
@@ -163,7 +166,7 @@ app.post('/register', (request, response) =>
                 }
                 console.log(`A row has been inserted with rowid ${this.lastID}`);
             });
-            console.log('Submitted data:', { username, password });
+            console.log('Submitted data:', { email, password });
             response.redirect('/');
         }
     })
@@ -171,13 +174,14 @@ app.post('/register', (request, response) =>
 
 
 //submits a complaint ticket
-app.post('/submit_form', (request, response) => 
+app.post('/submit_form', upload.single('file'), (request, response) => 
 {
     // Access form data from request.body
     const title = request.body.title;
     const body = request.body.body;
-
-    db.run('INSERT INTO tickets (user, title, body) VALUES ( ?, ?, ?)', [ request.session.userId ,title, body], function (err) 
+    const image = request.file.buffer;
+    console.log(image);
+    db.run('INSERT INTO tickets (email, title, body, image) VALUES ( ?, ?, ?, ?)', [ request.session.userId ,title, body, image], function (err) 
     {
         if (err) 
         {
@@ -191,4 +195,4 @@ app.post('/submit_form', (request, response) =>
 
 
 //hosts the website to local port 3000
-app.listen(process.env.PORT || 3000, () => console.log(`app avaiable on http://localhost:3000`));
+app.listen(process.env.PORT || 3001, () => console.log(`app avaiable on http://localhost:3000`));
