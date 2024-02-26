@@ -3,7 +3,6 @@
 <head>
     <meta charset = "UTF-8">
     <meta name = "viewport" content = "width=device-width">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" />
     <title>Project</title>
 
     <style>
@@ -30,25 +29,28 @@
             box-sizing: border-box;
         }
 
-        /* button {
+        button {
             padding: 10px;
-        } */
+        }
         </style>
 </head>
 <body>
 
     <h1>
-        Login
+        Register
     </h1>
     <a href="/">Home Page</a>
-    <a href="/create_account.html">register</a>
-    <a href="/create_admin.html">register as admin</a>
-    <form action="/login" method="post">
+
+    <form action="/register_admin" method="post">
         <label for="email">email:</label>
-        <input type="text" id="email" name="email" required>
+        <input type="email" id="email" name="email" required>
 
         <label for="password">password:</label>
-        <input type="password" id="password" name="password" required></textarea>
+        <input type="text" id="password" name="password" required></textarea>
+
+        <label for="aprtment group">building:</label>
+        <input type="text" id="building" name="building" required>
+
         <button type="submit">Submit</button>
     </form>
 

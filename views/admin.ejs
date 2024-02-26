@@ -33,7 +33,7 @@
 <body>
 
     <h1>
-        HOME
+        ADMIN VIEW
     </h1>
     <nav>
         <% if (user) { %>
@@ -42,8 +42,6 @@
             <a href="/login.html">Login</a>
         <% } %>
     </nav>
-    <a href="/submit_form.html">submit form</a>
-    <form action="/logData" method="get">
         <button type="submit">Log Data</button>
     </form>
     <div>
@@ -53,6 +51,8 @@
             <div class = container>
                 <% tickets.forEach(ticket => { %>
                         <div class="cool-box">
+                            <p><%= ticket.email %></p>
+                            <hr>
                             <p><%= ticket.title %></p>
                             <hr>
                             <p><%= ticket.body %></p>
@@ -71,9 +71,18 @@
                                     <p>completed</p>
                                 <% } %>
                             <% } %>
-                            <% if (ticket.progress == 2) { %>
-                                <button onclick="deleteEntry('<%= ticket.id %>')">close ticket</button
-                            <% } %>
+                            <form action="/submit_status" method="post">
+                                <label for="status">Choose a status:</label>
+                                <select name="progress" id="progress">
+                                <option value="0">submitted</option>
+                                <option value="1">In progress</option>
+                                <option value="2">finished</option>
+                                </select>
+                                <input type="hidden" name="selectedId" value="<%= ticket.id %>">
+                                <br>
+                                <button type="submit">Submit</button>
+                                <button onclick="deleteEntry('<%= ticket.id %>')">close ticket</button>
+                            </form>
                         </div>
                 <% }); %>
             </div>
