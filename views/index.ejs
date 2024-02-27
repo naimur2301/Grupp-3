@@ -70,9 +70,10 @@
                                 <% if (ticket.progress == 2) { %>
                                     <p>completed</p>
                                 <% } %>
-                            <% } %>
-                            <% if (ticket.progress == 2) { %>
-                                <button onclick="deleteEntry('<%= ticket.id %>')">close ticket</button
+                                <% if (ticket.progress == 2) { %>
+                                    <br>
+                                    <button onclick="deleteEntry('<%= ticket.id %>')">close ticket</button>
+                                <% } %>
                             <% } %>
                         </div>
                 <% }); %>

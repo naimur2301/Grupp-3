@@ -1,5 +1,15 @@
 //Erik was here
 //dependencies
+//todo
+
+//for the ultra beta the only thing needed is the filtering by building groups and creating groups
+
+//for the finished working I need to make the UI fucking epic, this part will suck so fucking hard I hate it
+//also I need to code an epic scheduling system
+//and a scheduling editor
+//implement safety check so that normal users cannot acces admin 
+
+//clean up my messy ass code, not enough files
 const express = require('express');
 const app = express();
 const sqlite3 = require('sqlite3').verbose();
