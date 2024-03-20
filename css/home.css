@@ -5,6 +5,7 @@
     box-sizing: border-box;
 }
 
+
 /* Basic styling for header and navigation */
 header {
     background-color: #ffffff;
@@ -85,9 +86,13 @@ nav ul li a {
     background-color: #f9f9f9;
 }
 
-.section-2 h2 {
+.section-2 .container{ 
+    display: flex;
+}
+.section-2  h2 {
     font-size: 2em;
-    margin-bottom: 20px;
+    padding: 20px 0;
+    text-align: center;
 }
 
 .section-2 p {
@@ -97,12 +102,29 @@ nav ul li a {
 
 .section-2 img {
     width: 100%;
-    max-width: 600px;
+    max-width: 350px;
     height: auto;
     display: block;
     margin: 0 auto;
 }
 
+.section-3 h2{
+    font-size: 2em;
+    padding: 20px 0;
+    text-align: center;
+}
+
+.section-3 .container{
+    display: flex;
+}
+
+.section-3 img {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
 /* Basic styling for footer */
 footer {
     background-color: #333;
