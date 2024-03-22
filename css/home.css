@@ -83,7 +83,7 @@ nav ul li a {
 }
 
 .section-2 {
-    background-color: #f9f9f9;
+    background-color: #FFFFFF;
 }
 
 .section-2 .container{ 
@@ -116,14 +116,13 @@ nav ul li a {
 
 .section-3 .container{
     display: flex;
+    column-gap: 20px;
 }
 
 .section-3 img {
-    width: 100%;
-    max-width: 400px;
-    height: auto;
-    display: block;
-    margin: 0 auto;
+    max-width: 50%;
+    max-height: 400px;
+    margin: 55px auto;
 }
 /* Basic styling for footer */
 footer {
