@@ -25,7 +25,8 @@ console.log(__dirname);
 const db = new sqlite3.Database('mydatabase.db');
 const fs = require('fs');
 const path = require('path');
-
+app.use(express.static('public'));
+src = '/public/test.png';
 //session middleware for login
 app.use(session({
     secret: 'EriksChocolateCookie',
