@@ -2,8 +2,9 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
+    <meta charset = "UTF-8">
+    <meta name = "viewport" content = "width=device-width">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" />
     <title>Project</title>
 
     <style>
@@ -59,12 +60,16 @@
     </h1>
     <a href="/">Home Page</a>
 
-    <form action="/submit_form" method="post">
+    <form action="/submit_form" method="post" enctype="multipart/form-data">
         <label for="TITLE">TITLE:</label>
         <input type="text" id="title" name="title" required>
 
         <label for="body">BODY:</label>
         <textarea type="text" id="body" name="body" required></textarea>
+
+        <label for="file">Choose an image:</label>
+        <input type="file" name="file" id="file" accept="image/*">
+
         <button type="submit">Submit</button>
     </form>
 
