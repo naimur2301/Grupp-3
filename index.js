@@ -20,10 +20,11 @@ const session = require('express-session');
 const {readFile} = require('fs').promises;
 const multer = require('multer');
 const upload = multer();
-
+console.log(__dirname);
 //local database for testing
 const db = new sqlite3.Database('mydatabase.db');
-
+const fs = require('fs');
+const path = require('path');
 
 //session middleware for login
 app.use(session({
@@ -45,13 +46,29 @@ app.set('view engine', 'ejs');
 //database table for complaints
 db.run('CREATE TABLE IF NOT EXISTS tickets (id INTEGER PRIMARY KEY, email text, title TEXT, image BLOB, body TEXT, building TEXT ,progress INT)');
 //database table for users
-db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, email TEXT, lgh TEXT, building TEXT, password TEXT, admin INT)');
+db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, email TEXT, lgh TEXT, building TEXT, password TEXT, admin INT, image BLOB)');
 //database table for housing groups 
 db.run('CREATE TABLE IF NOT EXISTS groups (id INTEGER PRIMARY KEY, building TEXT, b_group TEXT)');
 //this just makes hyperlinks work, idk i think it should probably be in a class or something but I'm too lazy
 //there most likely exists a much cleaner way to do this
 
 //this one needs all of this so that it can send the users tickets to the ejs
+app.get('/profile', async (request, response) =>
+{
+    db.all('select * FROM users WHERE email = ?', [request.session.userId], (err, results) =>
+    {
+        if(err)
+        {
+            console.error('Error fetching complaints:', err);
+            response.status(500).send('Internal Server Error');
+            return;
+        }
+        else
+        {
+            response.render('profile', { user: request.session.userId, profile: results[0] });
+        }
+    });
+});
 app.get('/', async (request, response) => 
 {
     const email = request.session.userId;
@@ -132,6 +149,10 @@ app.get('/manage_groups', async (request, response) =>
         response.render('manage_groups', { user: request.session.userId, buildings : buildings});
     });
 });
+app.get('/home.html', async (request, response) => 
+{
+    response.send(await readFile('./home.html', 'utf-8'));
+});
 app.get('/register_worker.html', async (request, response) => 
 {
     response.send(await readFile('./create_worker.html'));
@@ -140,13 +161,9 @@ app.get('/submit_form.html', async (request, response) =>
 {
     response.send(await readFile('./submit_form.html', 'utf8'));
 });
-app.get('/home.html', async (request, response) => 
-{
-    response.send(await readFile('./home.html', 'utf8'));
-});
 app.get('/login.html', async (request, response) => 
 {
-    response.send(await readFile('./login.html', 'utf8'));
+    response.send(await readFile(path.join(__dirname, '/login.html'), 'utf8'));
 });
 app.get('/create_account.html', async (request, response) => 
 {
@@ -205,18 +222,18 @@ app.post('/login', (request, response) =>
                 }
                 else
                 {
-                    response.redirect('/');
+                    response.redirect('/home.html');
                 }
             }
             else
             {
                 console.log('wrong password');
-                response.redirect('/');
+                response.redirect('/home.html');
             }
         } else 
         {
             console.log('no user found');
-            response.redirect('/');
+            response.redirect('/login.html');
         }
     })
 });

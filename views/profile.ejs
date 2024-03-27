@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang= "en">
+<head>
+    <meta charset = "UTF-8">
+    <meta name = "viewport" content = "width=device-width">
+    <title>Project</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" />
+    <style>
+        .login-container {
+            margin: 0; /* Remove default margin */
+            text-align: left; /* Align text to the left within the container */
+            background-color: #f6f2f2;
+            width: 300px;
+            margin: 100px 150px 0;
+            margin-top: 75px; /* Adjust the top margin as needed */
+            padding: 20px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+        display: flex;
+        justify-content: center;
+        }
+
+        body {
+            background-color: #cccccc;
+            font-family: Courier, monospace;
+            text-align: center;
+            background-image: url("test.png");
+            background-size: cover;
+        }
+
+        .cool-box {
+            width: 200px; /* Set your desired width */
+            height: 350px; /* Set your desired height */
+            margin: 10px; /* Add margin for spacing between boxes */
+            border: 1px solid #aba0a0;
+            background-color: #e3e9ec; /* Box background color */
+            color: #000000; /* Text color */
+            padding: 20px; /* Padding inside the box */
+            border-radius: 10px; /* Rounded corners */
+            text-align: center;
+}
+        </style>
+</head>
+<body>
+
+    <h1>
+        Profil
+    </h1>
+    <nav>
+        <% if (user) { %>
+            <p> Logged in as <%= user %>  <a href="/logout">logout</a></p>
+        <% } else { %>
+            <a href="/login.html">Login</a>
+        <% } %>
+    </nav>
+    <div>
+        <% if (profile) { %>
+            <ul>
+            <div class="login-container">
+                <p>Email: <%= profile.email %></p>
+                <p>Bygnad: <%= profile.building %></p>
+                <p>LGH: <%= profile.lgh %></p>
+            </div>
+            </ul>
+        <% } else { %>
+            <p>Not logged in</p>
+        <% } %>
+      </div>
+      <script>
+        function deleteEntry(entryId) 
+        {
+            fetch('/delete',
+            {
+                method: 'POST',
+                headers: 
+                {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `entryId=${entryId}`,
+            })
+            .then(response => 
+            {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(message => 
+            {
+                alert(message);
+            })
+            .catch(error => 
+            {
+                console.error('There was a problem with the fetch operation:', error);
+            }
+            );
+            location.reload();
+        }
+    </script>
+</body>
+</html>

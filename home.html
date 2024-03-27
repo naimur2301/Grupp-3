@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang= "en">
+      
+<head>
+    <meta charset = "UTF-8">
+    <meta name = "viewport" content = "width=device-width">
+
+    <title>Project</title>
+    <style>
+        .user-icon {
+        right: 20px; /* Distance from the right */
+        z-index: 999; /* Ensure it's above other content */
+        display: block; /* Make the anchor tag a block element to set width and height */
+        width: 50px; /* Set width of the clickable image */
+        height: 50px; /* Set height of the clickable image */
+    }
+
+    .user-icon img {
+        width: 100%; /* Make the image fill the anchor tag */
+        height: 100%; /* Make the image fill the anchor tag */
+        border-radius: 50%; /* Make the image round */
+    }
+
+        .button-container {
+            display: flex;
+            justify-content: center; /* Center buttons horizontally */
+            margin-top: 200px; /* Add some space from the top */
+        }
+        
+
+        button {
+            justify-content: center; /* Center buttons horizontally */
+            margin-top: 50px; /* Add some space from the top */
+            flex: 1; /* Each button takes equal width */
+            padding: 125px 20px;
+            border-radius: 30px;
+            margin: 10px;
+            font-size: 25px;
+            border: none;
+            background-color: #118b3e;
+            color: rgb(248, 248, 248);
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #2dd57e;
+        }   
+
+        body {
+            background-color: #f6ecec;
+            font-family: Courier, monospace;
+            text-align: center;
+            background-size: cover;
+        }
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Style for input*/
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+        .login-container {
+            background-color: #f6f2f2;
+            width: 300px;
+            margin: 100px 150px 0;
+            margin-top: 75px; /* Adjust the top margin as needed */
+            padding: 20px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <a href="/profile" class="user-icon">
+        <img src="login.png" alt="User Icon">
+    </a>
+    <h1>Minna Sidor</h1>
+    <div class="button-container">
+        <button class="button">Ny Felanmälan</button>
+        <button class="button">Pågåande Felanmälan</button>
+        <button class="button">Kontakta</button>
+    </div>
+</body>
+</html>
