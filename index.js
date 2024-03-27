@@ -95,20 +95,6 @@ app.get('/admin', async (request, response) =>
                 response.render('admin', { user: request.session.userId, tickets: tickets });
             }
         });
-        /*
-        db.all('SELECT * FROM tickets WHERE building IN (?)', [buildingNames.flat()], (err, tickets) => {
-            if (err) {
-                console.error('Error fetching tickets:', err);
-                response.status(500).send('Internal Server ERROR');
-                return;
-            }
-            else
-            {
-                // Process the retrieved tickets as needed
-                console.log('Tickets belonging to watched buildings:', tickets);
-                response.render('admin', { user: request.session.userId, tickets: tickets });
-            }
-        });*/
     });  
 });
 app.get('/manage_groups', async (request, response) => 
