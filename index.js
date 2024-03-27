@@ -10,6 +10,8 @@
 //implement safety check so that normal users cannot acces admin 
 
 //clean up my messy ass code, not enough files
+
+//add some fucking error handling 
 const express = require('express');
 const app = express();
 const sqlite3 = require('sqlite3').verbose();
@@ -41,11 +43,11 @@ app.set('view engine', 'ejs');
 
 
 //database table for complaints
-//db.run('DROP TABLE IF EXISTS tickets');
-db.run('CREATE TABLE IF NOT EXISTS tickets (id INTEGER PRIMARY KEY, email text, title TEXT, image BLOB, body TEXT, progress INT)');
+db.run('CREATE TABLE IF NOT EXISTS tickets (id INTEGER PRIMARY KEY, email text, title TEXT, image BLOB, body TEXT, building TEXT ,progress INT)');
 //database table for users
 db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, email TEXT, lgh TEXT, building TEXT, password TEXT, admin INT)');
-
+//database table for housing groups 
+db.run('CREATE TABLE IF NOT EXISTS groups (id INTEGER PRIMARY KEY, building TEXT, b_group TEXT)');
 //this just makes hyperlinks work, idk i think it should probably be in a class or something but I'm too lazy
 //there most likely exists a much cleaner way to do this
 
@@ -54,7 +56,7 @@ app.get('/', async (request, response) =>
 {
     const email = request.session.userId;
     console.log(email);
-    db.all('Select * FROM tickets where email = ?', [email], (err, results) =>
+    db.all('Select * FROM tickets where email= ?', [request.session.userId], (err, results) =>
     {
         if(err)
         {
@@ -73,20 +75,80 @@ app.get('/admin', async (request, response) =>
 {
     const email = request.session.userId;
     console.log(email);
-    db.all('Select * FROM tickets', (err, results) =>
+    db.all('SELECT building FROM groups WHERE b_group = ?', [email], (err, buildings) => {
+        if (err) {
+            console.error('Error fetching buildings:', err);
+            response.status(500).send('Internal Server ERROR');
+            return;
+        }
+        const buildingNames = buildings.map(building => building.building);
+        console.log(buildingNames);
+        db.all('SELECT * FROM tickets', (err, tickets) => {
+            if (err) {
+                console.error('Error fetching tickets:', err);
+                response.status(500).send('Internal Server ERROR');
+                return;
+            }
+            else
+            {
+                tickets = tickets.filter(ticket => buildingNames.includes(ticket.building));
+                response.render('admin', { user: request.session.userId, tickets: tickets });
+            }
+        });
+        /*
+        db.all('SELECT * FROM tickets WHERE building IN (?)', [buildingNames.flat()], (err, tickets) => {
+            if (err) {
+                console.error('Error fetching tickets:', err);
+                response.status(500).send('Internal Server ERROR');
+                return;
+            }
+            else
+            {
+                // Process the retrieved tickets as needed
+                console.log('Tickets belonging to watched buildings:', tickets);
+                response.render('admin', { user: request.session.userId, tickets: tickets });
+            }
+        });*/
+    });  
+});
+app.get('/manage_groups', async (request, response) => 
+{
+    const email = request.session.userID;
+    console.log(email);
+    let buildings = [];
+    db.all('Select * FROM users ', (err, results) =>
     {
         if(err)
         {
-            console.error('Error fetching complaints:', err);
-            response.status(500).send('Internal Server Error');
+            console.error('Error fetching buildings:', err);
+            response.status(500).send('Internal Server ERROR');
             return;
         }
         else
         {
-            console.log('Data from the "tickets" table with logged in user:', results);
-            response.render('admin', { user: request.session.userId, tickets: results });
+            console.log('data: ', results);
+            results.forEach((row) => {  
+            let flag = true;
+                for(const str of buildings)
+                {
+                    if(row.building === str)
+                    {
+                        flag = false;
+                        break;
+                    }
+                }
+                if(flag)
+                {
+                    buildings.push(row.building);
+                }
+            });
         }
+        response.render('manage_groups', { user: request.session.userId, buildings : buildings});
     });
+});
+app.get('/register_worker.html', async (request, response) => 
+{
+    response.send(await readFile('./create_worker.html'));
 });
 app.get('/submit_form.html', async (request, response) => 
 {
@@ -120,7 +182,7 @@ app.get('/logout', (req, res) =>
 //dumps the database for tickets to server log
 app.get('/logData', (req, res) => 
 {
-    db.all('SELECT user, title, body FROM tickets', [], (err, rows) => {
+    db.all('SELECT building, b_group FROM groups', [], (err, rows) => {
         if (err) 
         {
             return console.error(err.message);
@@ -128,6 +190,7 @@ app.get('/logData', (req, res) =>
         console.log('Data from the "tickets" table:', rows);
         res.redirect('/');
     });
+    db.all('SELECT ')
 });
 
 
@@ -147,7 +210,7 @@ app.post('/login', (request, response) =>
         if (row) 
         {
             console.log('Found user:', row);
-            if(row.password == password)
+            if(row.password === password)
             {
                 request.session.userId = row.email;
                 if(row.admin == 2)
@@ -211,6 +274,42 @@ app.post('/register', (request, response) =>
     })
 });
 
+app.post('/register_worker', (request, repsonse) => 
+{
+    const password = request.body.password;
+    const email = request.body.email;
+    const building = request.body.building;
+
+    db.get('SELECT * FROM users WHERE email = ?', [email], (err, row) => 
+    {
+        if (err) 
+        {
+            console.error(err.message);
+            return;
+        }
+    
+        if (row) 
+        {
+            console.log('Found user:', row);
+            console.log('no new account created');
+            response.redirect('/'); 
+        } else 
+        {
+            console.log('User not found');
+            db.run('INSERT INTO users (password, email, building, admin) VALUES (?, ?, ?, ?)', [password, email, building, 3], function (err) 
+            {
+                if (err) 
+                {
+                    return console.error(err.message);
+                }
+                console.log(`A row has been inserted with rowid ${this.lastID}`);
+            });
+            console.log('Submitted data:', { email, password });
+            response.redirect('/');
+        }
+    })
+});
+
 app.post('/register_admin', (request, response) => 
 {
     const password = request.body.password;
@@ -256,16 +355,45 @@ app.post('/submit_form', upload.single('file'), (request, response) =>
     const body = request.body.body;
     const image = request.file ? request.file.buffer : null;
     console.log(image);
-    db.run('INSERT INTO tickets (email, title, body, image, progress) VALUES ( ?, ?, ?, ?, ?)', [ request.session.userId ,title, body, image, 0], function (err) 
-    {
-        if (err) 
+    db.get('SELECT building FROM users WHERE email = ?', [request.session.userId], (err, bld) => {
+        if(err)
         {
             return console.error(err.message);
         }
-        console.log(`A row has been inserted with rowid ${this.lastID}`);
+        else
+        {
+            console.log("ADFDAFASDFAS");
+            console.log(bld.building);
+            db.run('INSERT INTO tickets (email, title, body, building ,image, progress) VALUES ( ?, ?, ?, ?, ?, ?)', [ request.session.userId ,title, body, bld.building ,image, 0], function (err) 
+            {
+                if (err) 
+                {
+                    return console.error(err.message);
+                }
+                console.log(`A row has been inserted with rowid ${this.lastID}`);
+            });
+            console.log('Submitted data:', {title, body });
+            response.redirect('/');
+        }
     });
-    console.log('Submitted data:', {title, body });
-    response.redirect('/');
+});
+
+app.post('/submit-groups', (request, response) =>
+{
+    const buildings = request.body.building;
+    const buildingsArray = [].concat(buildings || []);
+    for(const str of buildingsArray) 
+    {
+        db.run('INSERT INTO groups (building, b_group) VALUES (?, ?)', [str, request.session.userId], function (err) 
+            {
+                if (err) 
+                {
+                    return console.error(err.message);
+                }
+                console.log(`A row has been inserted with rowid ${this.lastID}`);
+            });
+    }
+    response.redirect('/admin');
 });
 
 app.post('/delete', (req, res) => {

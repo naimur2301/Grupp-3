@@ -3,6 +3,7 @@
 <head>
     <meta charset = "UTF-8">
     <meta name = "viewport" content = "width=device-width">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" />
     <title>Project</title>
 
     <style>
@@ -41,6 +42,7 @@
         <% } else { %>
             <a href="/login.html">Login</a>
         <% } %>
+        <a href="/manage_groups">manage group</a>
     </nav>
         <button type="submit">Log Data</button>
     </form>
@@ -56,7 +58,7 @@
                             <p><%= ticket.title %></p>
                             <hr>
                             <p><%= ticket.body %></p>
-                            <% if (ticket.image) { %>
+                            <% if (ticket.image && user) { %>
                             <img src="data:image/jpeg;base64, <%= Buffer.from(ticket.image).toString('base64') %>" alt="Description of the image" height = "200" >
                             <% } %>
                             <% if (ticket.progress !== undefined ) { %>
