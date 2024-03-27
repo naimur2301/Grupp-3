@@ -83,7 +83,7 @@
 </head>
 <body>
     <a href="/profile" class="user-icon">
-        <img src="login.png" alt="User Icon">
+        <img src="data:image/jpeg;base64, <%= Buffer.from(profile.image).toString('base64') %>" alt="User Icon">
     </a>
     <h1>Minna Sidor</h1>
     <div class="button-container">

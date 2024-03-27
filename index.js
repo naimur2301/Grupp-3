@@ -152,7 +152,19 @@ app.get('/manage_groups', async (request, response) =>
 });
 app.get('/home.html', async (request, response) => 
 {
-    response.send(await readFile('./home.html', 'utf-8'));
+    db.all('select * FROM users WHERE email = ?', [request.session.userId], (err, results) =>
+    {
+        if(err)
+        {
+            console.error('Error fetching complaints:', err);
+            response.status(500).send('Internal Server Error');
+            return;
+        }
+        else
+        {
+            response.render('home', { user: request.session.userId, profile: results[0] });
+        }
+    });
 });
 app.get('/register_worker.html', async (request, response) => 
 {
@@ -247,7 +259,8 @@ app.post('/register', (request, response) =>
     const email = request.body.email;
     const lgh = request.body.lgh;
     const building = request.body.building;
-
+    const defaultImagePath = '/Users/eriksawander/prokect/Grupp-3/public/test.png'; // Replace with the actual path to your default image file
+    const defaultImageBuffer = fs.readFileSync(defaultImagePath);
     db.get('SELECT * FROM users WHERE email = ?', [email], (err, row) => 
     {
         if (err) 
@@ -264,7 +277,7 @@ app.post('/register', (request, response) =>
         } else 
         {
             console.log('User not found');
-            db.run('INSERT INTO users (password, email, lgh, building, admin) VALUES (?, ?, ?, ?, ?)', [password, email, lgh, building, 1], function (err) 
+            db.run('INSERT INTO users (password, email, lgh, building, admin, image) VALUES (?, ?, ?, ?, ?, ?)', [password, email, lgh, building, 1, defaultImageBuffer], function (err) 
             {
                 if (err) 
                 {
@@ -430,6 +443,18 @@ app.post('/submit_status', (req, res) => {
     res.redirect('/admin');
 });
 
+app.post('/submit_profile', upload.single('file'), (request, response) => 
+{
+    const image = request.file ? request.file.buffer : null;
+    db.run('UPDATE users SET image = ? WHERE email = ?', [image, request.session.userId], function(err) {
+        if (err) {
+            console.error(err);
+            return response.status(500).send('Error inserting file into database.');
+        }
+        // Respond with success message or redirect to profile page
+        response.redirect('profile');
+    });
+});
 
 //hosts the website to local port 3000
 app.listen(process.env.PORT || 3001, () => console.log(`app avaiable on http://localhost:3000`));

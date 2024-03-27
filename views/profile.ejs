@@ -6,6 +6,24 @@
     <title>Project</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" />
     <style>
+        #contentToShow {
+        display: none;
+        margin-top: 20px;
+        }
+
+
+        .user-icon {
+            right: 20px; /* Distance from the right */
+            z-index: 999; /* Ensure it's above other content */
+            display: block; /* Make the anchor tag a block element to set width and height */
+            width: 50px; /* Set width of the clickable image */
+            height: 50px; /* Set height of the clickable image */
+        }
+        .user-icon img {
+        width: 100%; /* Make the image fill the anchor tag */
+        height: 100%; /* Make the image fill the anchor tag */
+        border-radius: 50%; /* Make the image round */
+        }
         .login-container {
             margin: 0; /* Remove default margin */
             text-align: left; /* Align text to the left within the container */
@@ -50,20 +68,30 @@
     <h1>
         Profil
     </h1>
-    <nav>
-        <% if (user) { %>
-            <p> Logged in as <%= user %>  <a href="/logout">logout</a></p>
-        <% } else { %>
-            <a href="/login.html">Login</a>
-        <% } %>
-    </nav>
     <div>
         <% if (profile) { %>
+
             <ul>
             <div class="login-container">
+                <img id ="clickableImage" class="user-icon" src="data:image/jpeg;base64, <%= Buffer.from(profile.image).toString('base64') %>" alt="User Icon" style="cursor: pointer;">
+                <div id = "contentToShow">
+                    <form action="/submit_profile" method="post" enctype="multipart/form-data">
+                    <label for="file">Choose an image:</label>
+                    <input type="file" name="file" id="file" accept="image/*">
+                    <button type="submit">Submit</button>
+                    </form>
+                </div>
                 <p>Email: <%= profile.email %></p>
                 <p>Bygnad: <%= profile.building %></p>
                 <p>LGH: <%= profile.lgh %></p>
+                <nav>
+                    <% if (user) { %>
+                        <a href="/logout">logout</a></p>
+                    <% } else { %>
+                        <a href="/login.html">Login</a>
+                    <% } %>
+                    <a href ="/home.html">home</a>
+                </nav>
             </div>
             </ul>
         <% } else { %>
@@ -71,35 +99,12 @@
         <% } %>
       </div>
       <script>
-        function deleteEntry(entryId) 
-        {
-            fetch('/delete',
-            {
-                method: 'POST',
-                headers: 
-                {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `entryId=${entryId}`,
-            })
-            .then(response => 
-            {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            })
-            .then(message => 
-            {
-                alert(message);
-            })
-            .catch(error => 
-            {
-                console.error('There was a problem with the fetch operation:', error);
-            }
-            );
-            location.reload();
-        }
-    </script>
+
+        // JavaScript to show content when the image is clicked
+        document.getElementById('clickableImage').addEventListener('click', function() {
+          var content = document.getElementById('contentToShow');
+          content.style.display = content.style.display === 'block' ? 'none' : 'block';
+        });
+        </script>
 </body>
 </html>
