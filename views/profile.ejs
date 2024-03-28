@@ -73,9 +73,10 @@
 
             <ul>
             <div class="login-container">
-                <%if(user.image){%>
+                <%if(profile.image){%>
                 <img id ="clickableImage" class="user-icon" src="data:image/jpeg;base64, <%= Buffer.from(profile.image).toString('base64') %>" alt="User Icon" style="cursor: pointer;">
                 <%}%>
+                <%if(user == profile.email){%>
                 <div id = "contentToShow">
                     <form action="/submit_profile" method="post" enctype="multipart/form-data">
                     <label for="file">Choose an image:</label>
@@ -83,6 +84,7 @@
                     <button type="submit">Submit</button>
                     </form>
                 </div>
+                <%}%>
                 <p>Email: <%= profile.email %></p>
                 <%if(profile.admin != 2){%>
                 <p>Bygnad: <%= profile.building %></p>

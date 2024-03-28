@@ -7,7 +7,16 @@
     <title>Project</title>
 
     <style>
-
+        .sidebar {
+            width: 250px; /* Adjust width as needed */
+            height: 100%; /* Make sidebar full height */
+            background-color: #f4f4f4;
+            position: fixed; /* Fix the sidebar position */
+            top: 0;
+            left: 0;
+            overflow-y: auto; /* Add scrollbar if content exceeds height */
+            padding: 20px;
+        }
         .container {
         display: flex;
         justify-content: center;
@@ -19,6 +28,7 @@
         }
 
         .cool-box {
+            overflow-x: auto; /* Add scrollbar if content exceeds height */
             width: 200px; /* Set your desired width */
             height: 350px; /* Set your desired height */
             margin: 10px; /* Add margin for spacing between boxes */
@@ -36,13 +46,21 @@
     <h1>
         ADMIN VIEW
     </h1>
-    <nav>
-        <% if (user) { %>
-            <p> Logged in as <%= user %>  <a href="/logout">logout</a></p>
-        <% } else { %>
-            <a href="/login.html">Login</a>
+    <div class="sidebar">
+    <form action="/submit-groups" method="post">
+        <% if (buildings && user) { %>
+            <p>Choose Buildings:</p>
+            <% buildings.forEach(building => { %>
+                <label><input type="checkbox" name="building" value="<%= building %>"> <%= building %></label>
+                <br>
+            <% }); %>
+            <button type="submit">Submit</button>
         <% } %>
-        <a href="/manage_groups">manage group</a>
+    </form>
+    <a href = "/admin">CLEAR SELECTIONS</a>
+</div>
+    <nav>
+        <a href = '/home_admin'> home</a>
     </nav>
         <button type="submit">Log Data</button>
     </form>

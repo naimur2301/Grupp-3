@@ -106,7 +106,7 @@ app.get('/admin', async (request, response) =>
 {
     const email = request.session.userId;
     console.log(email);
-    db.all('SELECT building FROM groups WHERE b_group = ?', [email], (err, buildings) => {
+    db.all('SELECT DISTINCT building FROM users',  (err, buildings) => {
         if (err) {
             console.error('Error fetching buildings:', err);
             response.status(500).send('Internal Server ERROR');
@@ -123,7 +123,7 @@ app.get('/admin', async (request, response) =>
             else
             {
                 tickets = tickets.filter(ticket => buildingNames.includes(ticket.building));
-                response.render('admin', { user: request.session.userId, tickets: tickets });
+                response.render('admin', { user: request.session.userId, tickets: tickets, buildings: buildingNames });
             }
         });
     });  
@@ -460,18 +460,36 @@ app.post('/submit-groups', (request, response) =>
 {
     const buildings = request.body.building;
     const buildingsArray = [].concat(buildings || []);
-    for(const str of buildingsArray) 
-    {
-        db.run('INSERT INTO groups (building, b_group) VALUES (?, ?)', [str, request.session.userId], function (err) 
-            {
-                if (err) 
-                {
-                    return console.error(err.message);
-                }
-                console.log(`A row has been inserted with rowid ${this.lastID}`);
-            });
+    let query = 'SELECT * FROM tickets';
+    let params = [];
+    if (buildingsArray && Array.isArray(buildingsArray)) {
+        // If one or more buildings are selected, add filter condition to the query
+        query += ' WHERE building IN (' + buildingsArray.map(() => '?').join(',') + ')';
+        params.push(...buildingsArray);
     }
-    response.redirect('/admin');
+    db.all(query, params, (err, tickets) => {
+        if (err) {
+            console.error('Error fetching tickets:', err);
+            return response.status(500).send('Internal Server Error');
+        }
+        // Fetch profile information for the logged-in user
+        db.get('SELECT * FROM users WHERE email = ?', [request.session.userId], (err, profile) => {
+            if (err) {
+                console.error('Error fetching profile:', err);
+                return response.status(500).send('Internal Server Error');
+            }
+            db.all('SELECT DISTINCT building FROM users',  (err, buildings) => {
+                const buildingNames = buildings.map(building => building.building);
+                // Render the index template with filtered tickets and profile data
+                response.render('admin', { 
+                user: request.session.userId, 
+                tickets: tickets, 
+                profile: profile,
+                buildings : buildingNames
+            });
+            });
+        });
+    });
 });
 
 app.post('/delete', (req, res) => {
