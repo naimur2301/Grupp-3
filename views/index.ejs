@@ -6,7 +6,41 @@
     <title>Project</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" />
     <style>
+    .user-icon {
+        right: 20px; /* Distance from the right */
+        z-index: 999; /* Ensure it's above other content */
+        display: block; /* Make the anchor tag a block element to set width and height */
+        width: 50px; /* Set width of the clickable image */
+        height: 50px; /* Set height of the clickable image */
+    }
 
+    .user-icon img {
+        width: 100%; /* Make the image fill the anchor tag */
+        height: 100%; /* Make the image fill the anchor tag */
+        border-radius: 50%; /* Make the image round */
+    }
+
+        body {
+            background-color: #f8f6f6;
+            font-family: Courier, monospace;
+            text-align: center;
+            background-size: cover;
+        }
+
+
+        .user-icon {
+        right: 20px; /* Distance from the right */
+        z-index: 999; /* Ensure it's above other content */
+        display: block; /* Make the anchor tag a block element to set width and height */
+        width: 50px; /* Set width of the clickable image */
+        height: 50px; /* Set height of the clickable image */
+    }
+
+    .user-icon img {
+        width: 100%; /* Make the image fill the anchor tag */
+        height: 100%; /* Make the image fill the anchor tag */
+        border-radius: 50%; /* Make the image round */
+    }
         .container {
         display: flex;
         justify-content: center;
@@ -31,23 +65,14 @@
         </style>
 </head>
 <body>
-
+    <a href="/profile" class="user-icon">
+        <img src="data:image/jpeg;base64, <%= Buffer.from(profile.image).toString('base64') %>" alt="User Icon">
+    </a>
     <h1>
-        HOME
+        Pågåande Felanmälan
     </h1>
-    <nav>
-        <% if (user) { %>
-            <p> Logged in as <%= user %>  <a href="/logout">logout</a></p>
-        <% } else { %>
-            <a href="/login.html">Login</a>
-        <% } %>
-    </nav>
-    <a href="/submit_form.html">submit form</a>
-    <form action="/logData" method="get">
-        <button type="submit">Log Data</button>
-    </form>
+    <a href = "/home.html" >Home</a>
     <div>
-        <h2>Tickets</h2>
         <% if (tickets) { %>
             <ul>
             <div class = container>
@@ -80,7 +105,7 @@
             </div>
             </ul>
         <% } else { %>
-            <p>No tickets</p>
+            <p>Inga Felanmälan</p>
         <% } %>
       </div>
       <script>

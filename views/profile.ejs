@@ -73,7 +73,9 @@
 
             <ul>
             <div class="login-container">
+                <%if(user.image){%>
                 <img id ="clickableImage" class="user-icon" src="data:image/jpeg;base64, <%= Buffer.from(profile.image).toString('base64') %>" alt="User Icon" style="cursor: pointer;">
+                <%}%>
                 <div id = "contentToShow">
                     <form action="/submit_profile" method="post" enctype="multipart/form-data">
                     <label for="file">Choose an image:</label>
@@ -82,15 +84,21 @@
                     </form>
                 </div>
                 <p>Email: <%= profile.email %></p>
+                <%if(profile.admin != 2){%>
                 <p>Bygnad: <%= profile.building %></p>
                 <p>LGH: <%= profile.lgh %></p>
+                <%}%>
                 <nav>
-                    <% if (user) { %>
-                        <a href="/logout">logout</a></p>
-                    <% } else { %>
+                    <% if (user && profile.email == user) { %>
+                        <a href="/">logout</a></p>
+                    <% } else if(profile.email == user) { %>
                         <a href="/login.html">Login</a>
                     <% } %>
-                    <a href ="/home.html">home</a>
+                    <%if(profile.admin == 2 && profile.email == user){%>
+                        <a href ="/home_admin">home</a>
+                    <%}else{%>
+                        <a href = "home.html">home</a>
+                    <%}%>
                 </nav>
             </div>
             </ul>

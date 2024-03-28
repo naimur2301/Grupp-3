@@ -70,11 +70,11 @@ app.get('/profile', async (request, response) =>
         }
     });
 });
-app.get('/', async (request, response) => 
+app.get('/tickets', async (request, response) => 
 {
     const email = request.session.userId;
     console.log(email);
-    db.all('Select * FROM tickets where email= ?', [request.session.userId], (err, results) =>
+    db.all('Select * FROM tickets where email= ?', [email], (err, results) =>
     {
         if(err)
         {
@@ -84,8 +84,21 @@ app.get('/', async (request, response) =>
         }
         else
         {
-            console.log('Data from the "tickets" table with logged in user:', results);
-            response.render('index', { user: request.session.userId, tickets: results });
+            db.all('SELECT * FROM users WHERE email = ?', [email], (err, profile) =>
+            {
+                if(err)
+                {
+                    console.error('Error fetching profile:', err);
+                    response.status(500).send('Internal Server Error');
+                    return;
+                }
+                else
+                {
+                    console.log('Data from the "tickets" table with logged in user:', results);
+                    console.log('Data from the "tickets" table with logged in user:', profile);
+                    response.render('index', { user: request.session.userId, tickets: results, profile: profile[0] });
+                }
+            });
         }
     });
 });
@@ -150,6 +163,23 @@ app.get('/manage_groups', async (request, response) =>
         response.render('manage_groups', { user: request.session.userId, buildings : buildings});
     });
 });
+app.get('/contact', async (request, response) =>
+{
+    const email = request.session.userId;
+    console.log(email);
+    db.all('SELECT * FROM users WHERE admin = ?', [2], (err, results) => {
+        if (err) {
+            console.error('Error fetching buildings:', err);
+            response.status(500).send('Internal Server ERROR');
+            return;
+        }
+        else
+        {
+            response.render('profile', {user: email, profile: results[0]});
+        }
+    });  
+});
+
 app.get('/home.html', async (request, response) => 
 {
     db.all('select * FROM users WHERE email = ?', [request.session.userId], (err, results) =>
@@ -166,15 +196,45 @@ app.get('/home.html', async (request, response) =>
         }
     });
 });
+app.get('/home_admin', async (request, response) => 
+{
+    db.all('select * FROM users WHERE email = ?', [request.session.userId], (err, results) =>
+    {
+        if(err)
+        {
+            console.error('Error fetching complaints:', err);
+            response.status(500).send('Internal Server Error');
+            return;
+        }
+        else
+        {
+            response.render('home_admin', { user: request.session.userId, profile: results[0] });
+        }
+    });
+});
+
+
 app.get('/register_worker.html', async (request, response) => 
 {
     response.send(await readFile('./create_worker.html'));
 });
 app.get('/submit_form.html', async (request, response) => 
 {
-    response.send(await readFile('./submit_form.html', 'utf8'));
+    db.all('select * FROM users WHERE email = ?', [request.session.userId], (err, results) =>
+    {
+        if(err)
+        {
+            console.error('Error fetching complaints:', err);
+            response.status(500).send('Internal Server Error');
+            return;
+        }
+        else
+        {
+            response.render('submit_form', { user: request.session.userId, profile: results[0] });
+        }
+    });
 });
-app.get('/login.html', async (request, response) => 
+app.get('/', async (request, response) => 
 {
     response.send(await readFile(path.join(__dirname, '/login.html'), 'utf8'));
 });
@@ -231,7 +291,7 @@ app.post('/login', (request, response) =>
                 request.session.userId = row.email;
                 if(row.admin == 2)
                 {
-                    response.redirect('/admin');
+                    response.redirect('/home_admin');
                 }
                 else
                 {
@@ -246,7 +306,7 @@ app.post('/login', (request, response) =>
         } else 
         {
             console.log('no user found');
-            response.redirect('/login.html');
+            response.redirect('/');
         }
     })
 });
@@ -332,7 +392,8 @@ app.post('/register_admin', (request, response) =>
     const password = request.body.password;
     const email = request.body.email;
     const building = request.body.building;
-
+    const defaultImagePath = '/Users/eriksawander/prokect/Grupp-3/public/test.png'; // Replace with the actual path to your default image file
+    const defaultImageBuffer = fs.readFileSync(defaultImagePath);
     db.get('SELECT * FROM users WHERE email = ?', [email], (err, row) => 
     {
         if (err) 
@@ -349,7 +410,7 @@ app.post('/register_admin', (request, response) =>
         } else 
         {
             console.log('User not found');
-            db.run('INSERT INTO users (password, email, building, admin) VALUES (?, ?, ?, ?)', [password, email, building, 2], function (err) 
+            db.run('INSERT INTO users (password, email, building, admin, image) VALUES (?, ?, ?, ?, ?)', [password, email, building, 2, defaultImageBuffer], function (err) 
             {
                 if (err) 
                 {
@@ -390,7 +451,7 @@ app.post('/submit_form', upload.single('file'), (request, response) =>
                 console.log(`A row has been inserted with rowid ${this.lastID}`);
             });
             console.log('Submitted data:', {title, body });
-            response.redirect('/');
+            response.redirect('/home.html');
         }
     });
 });
