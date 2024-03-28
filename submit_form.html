@@ -4,18 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" />
     <title>Project</title>
 
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Courier, monospace;
             text-align: center;
+            background-image: url(/test.png);
+            background-size: cover;
+            background-repeat: no-repeat;
         }
 
         /* Add some basic styling for the form */
         form {
-            max-width: 400px;
-            margin: 0 auto;
+            /* max-width: 400px; */
+            margin: 0 5%;
         }
 
         /* Style for input fields */
@@ -46,28 +56,38 @@
             /* Adjust the height as needed */
         }
 
+        .ChooseImg {
+            color: black;
+            background-color: #dcedf5b8;
+        }
+
         button {
-            padding: 10px;
+            background-color: #fff;
+            color: #000;
         }
     </style>
 </head>
 
 <body>
+    <section>
+        <h1>
+            Submit form
+        </h1>
+        <a href="/">Home Page</a>
 
-    <h1>
-        Submit form
-    </h1>
-    <a href="/">Home Page</a>
+        <form action="/submit_form" method="post" enctype="multipart/form-data">
+            <label for="TITLE">TITLE:</label>
+            <input type="text" id="title" name="title" required>
 
-    <form action="/submit_form" method="post">
-        <label for="TITLE">TITLE:</label>
-        <input type="text" id="title" name="title" required>
+            <label for="body">BODY:</label>
+            <textarea type="text" id="body" name="body" required></textarea>
 
-        <label for="body">BODY:</label>
-        <textarea type="text" id="body" name="body" required></textarea>
-        <button type="submit">Submit</button>
-    </form>
+            <label for="file" class="ChooseImg">Choose an image:</label>
+            <input type="file" name="file" id="file" accept="image/*">
 
+            <button type="submit">Submit</button>
+        </form>
+    </section>
 </body>
 
 </html>
