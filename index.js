@@ -45,7 +45,7 @@ app.set('view engine', 'ejs');
 
 
 //database table for complaints
-db.run('CREATE TABLE IF NOT EXISTS tickets (id INTEGER PRIMARY KEY, email text, title TEXT, image BLOB, body TEXT, building TEXT ,progress INT)');
+db.run('CREATE TABLE IF NOT EXISTS tickets (id INTEGER PRIMARY KEY, email text, title TEXT, image BLOB, body TEXT, building TEXT ,progress INT, worker TEXT)');
 //database table for users
 db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, email TEXT, lgh TEXT, building TEXT, password TEXT, admin INT, image BLOB)');
 //database table for housing groups 
@@ -67,6 +67,22 @@ app.get('/profile', async (request, response) =>
         else
         {
             response.render('profile', { user: request.session.userId, profile: results[0] });
+        }
+    });
+});
+app.get('/workers', async (request, response) =>
+{
+    db.all('SELECT * FROM users where admin = ?', [3], (err, results) =>
+    {
+        if(err)
+        {
+            console.error('Error fetching workers:', err);
+            response.status(500).send('Internal server error');
+            return;
+        }
+        else
+        {
+            response.render('workers', {user: request.session.userId, workers: results});
         }
     });
 });
@@ -216,7 +232,7 @@ app.get('/home_admin', async (request, response) =>
 
 app.get('/register_worker.html', async (request, response) => 
 {
-    response.send(await readFile('./create_worker.html'));
+    response.send(await readFile('./create_worker.html', 'utf8'));
 });
 app.get('/submit_form.html', async (request, response) => 
 {
@@ -293,6 +309,10 @@ app.post('/login', (request, response) =>
                 {
                     response.redirect('/home_admin');
                 }
+                else if(row.admin == 3)
+                {
+                    response.redirect('/home_worker');
+                }
                 else
                 {
                     response.redirect('/home.html');
@@ -351,12 +371,13 @@ app.post('/register', (request, response) =>
     })
 });
 
-app.post('/register_worker', (request, repsonse) => 
+app.post('/register_worker', (request, response) => 
 {
     const password = request.body.password;
     const email = request.body.email;
     const building = request.body.building;
-
+    const defaultImagePath = '/Users/eriksawander/prokect/Grupp-3/public/test.png'; // Replace with the actual path to your default image file
+    const defaultImageBuffer = fs.readFileSync(defaultImagePath);
     db.get('SELECT * FROM users WHERE email = ?', [email], (err, row) => 
     {
         if (err) 
@@ -369,11 +390,11 @@ app.post('/register_worker', (request, repsonse) =>
         {
             console.log('Found user:', row);
             console.log('no new account created');
-            response.redirect('/'); 
+            response.redirect('/');
         } else 
         {
             console.log('User not found');
-            db.run('INSERT INTO users (password, email, building, admin) VALUES (?, ?, ?, ?)', [password, email, building, 3], function (err) 
+            db.run('INSERT INTO users (password, email, building, admin, image) VALUES (?, ?, ?, ?, ?)', [password, email, building, 3, defaultImageBuffer], function (err) 
             {
                 if (err) 
                 {
