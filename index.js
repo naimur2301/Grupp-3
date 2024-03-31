@@ -43,7 +43,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //using ejs
 app.set('view engine', 'ejs');
 
-
 //database table for complaints
 db.run('CREATE TABLE IF NOT EXISTS tickets (id INTEGER PRIMARY KEY, email text, title TEXT, image BLOB, body TEXT, building TEXT ,progress INT, worker TEXT)');
 //database table for users
@@ -67,6 +66,35 @@ app.get('/profile', async (request, response) =>
         else
         {
             response.render('profile', { user: request.session.userId, profile: results[0] });
+        }
+    });
+});
+
+app.get('/schedule', async (request, response) =>
+{
+    db.all('SELECT * FROM tickets', (err, tickets) =>
+    {
+        if(err)
+        {
+            console.error('Error fetching tickets:', err);
+            response.status(500).send('Internal server error');
+            return;
+        }
+        else
+        {
+            db.all('SELECT * FROM users where admin = ?', [3], (err, workers) =>
+            {
+                if(err)
+                {
+                    console.error('Error fetching workers:', err);
+                    response.status(500).send('Internal server error');
+                    return;
+                }
+                else
+                {
+                    response.render('schedule', { workers: workers, tickets: tickets});
+                }
+            });
         }
     });
 });
@@ -446,6 +474,7 @@ app.post('/register_admin', (request, response) =>
 });
 
 
+
 //submits a complaint ticket
 app.post('/submit_form', upload.single('file'), (request, response) => 
 {
@@ -510,6 +539,25 @@ app.post('/submit-groups', (request, response) =>
             });
             });
         });
+    });
+});
+
+app.post('/submit-dates', (request, response) =>
+{
+    const ticketId = request.body.ticket;
+    const worker = request.body.worker;
+    const date = request.body.date;
+    db.run('UPDATE tickets SET worker = ?, progress = ? WHERE id = ?', [worker, date, ticketId], (err) =>
+    {
+        if(err)
+        {
+            console.error(`Error updating ticket ${ticketId}:`, err);
+        }
+        else
+        {
+            console.log(`Ticket ${ticketId} updated successfully`);
+            response.redirect('/schedule');
+        }
     });
 });
 
