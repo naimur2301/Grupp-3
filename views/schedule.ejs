@@ -7,6 +7,9 @@
 
     <title>Project</title>
     <style>
+    .ticket {
+    cursor: pointer;
+}
     .sidebar {
             width: 250px; /* Adjust width as needed */
             height: 100%; /* Make sidebar full height */
@@ -25,7 +28,7 @@
     .day {
         border: 1px solid #ccc;
         padding: 10px;
-        cursor: pointer;
+
     }
         .user-icon {
         right: 20px; /* Distance from the right */
@@ -103,6 +106,11 @@
 </head>
 <body>
     <h1>Schema</h1>
+    <div class="calendar-nav">
+        <button id="prev-month">Previous Month</button>
+        <span id="current-month">Month Year</span>
+        <button id="next-month">Next Month</button>
+    </div>
     <div class="sidebar">
         <form action="/submit-dates" method="post">
             <% if (workers && tickets) { %>
@@ -112,55 +120,124 @@
                 <% tickets.forEach(function(ticket) { %>
                     <option value="<%= ticket.id %>"><%= ticket.title %></option>
                 <% }); %>
+                </select>
                 <label for="worker">Choose an Option:</label>
                 <select name="worker" id="worker">
                 <% workers.forEach(function(worker) { %>
                     <option value="<%= worker.email %>"><%= worker.email %></option>
                 <% }); %>
+                </select>
                 <label for="date">Choose date:</label>
                 <input type="date" id="date" name="date">
-                    </select>
-                <button type="submit">Submit</button>
+                <button type="button" id="viewTicketButton">View Ticket</button>
+                <button type="submit">Submit</button> 
             <% } %>
         </form>
     </div>
     <div id="calendar"></div>
-    <script>
-function generateCalendarDays() {
-    const calendarContainer = document.getElementById('calendar');
-    calendarContainer.innerHTML = ''; 
-
+<script>
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     let date = new Date(),
-        year = date.getFullYear(),
-        month = date.getMonth(),
+            year = date.getFullYear(),
+            month = date.getMonth();
+    const currentMonthSpan = document.getElementById('current-month');
+    function generateCalendarDays() {
+
+        currentMonthSpan.textContent = months[month] + ' ' + year;
+        const calendarContainer = document.getElementById('calendar');
+        calendarContainer.innerHTML = ''; 
         firstDay = new Date(year, month, 1).getDay(),
         daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    for (let i = 0; i < firstDay; i++) {
-        calendarContainer.innerHTML += '<div class="day"></div>'; // Empty cells for preceding days
-    }
-    for (let i = 1; i <= daysInMonth; i++) {
-        const dayElement = document.createElement('div');
-        dayElement.classList.add('day');
-        dayElement.textContent = i;
-        const ticketsForDay = <%- JSON.stringify(tickets) %>.filter(ticket => {
-            const ticketDate = new Date(ticket.progress);
-            return (
-                ticketDate.getFullYear() === year &&
-                ticketDate.getMonth() === month &&
-                ticketDate.getDate() === i
-            );
+        for (let i = 0; i < firstDay; i++) {
+            calendarContainer.innerHTML += '<div class="day"></div>'; // Empty cells for preceding days
+        }
+        for (let i = 1; i <= daysInMonth; i++) {
+            const dayElement = document.createElement('div');
+            dayElement.classList.add('day');
+            dayElement.textContent = i;
+            const ticketsForDay = <%- JSON.stringify(tickets) %>.filter(ticket => {
+                const ticketDate = new Date(ticket.progress);
+                return (
+                    ticketDate.getFullYear() === year &&
+                    ticketDate.getMonth() === month &&
+                    ticketDate.getDate() === i
+                );
+            });
+            ticketsForDay.forEach(ticket => {
+                const ticketElement = document.createElement('div');
+                ticketElement.classList.add('ticket');
+                ticketElement.textContent = ticket.title;
+                ticketElement.dataset.ticketId = ticket.id;
+                dayElement.appendChild(ticketElement);
+            });
+            calendarContainer.appendChild(dayElement);
+        }
+        const ticketSelect = document.getElementById('ticket');
+    const viewTicketButton = document.getElementById('viewTicketButton');
+    const ticketElements = document.querySelectorAll('.ticket');
+        viewTicketButton.addEventListener('click', function() {
+            // Get the selected ticket ID
+            const selectedTicketId = ticketSelect.value;
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'ticketId';
+            hiddenInput.value = selectedTicketId;
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/view-ticket'; 
+            form.appendChild(hiddenInput);
+            document.body.appendChild(form);
+            form.submit();
         });
-        ticketsForDay.forEach(ticket => {
-            const ticketElement = document.createElement('div');
-            ticketElement.textContent = ticket.title;
-            dayElement.appendChild(ticketElement);
+        // Add click event listener to each ticket element
+        ticketElements.forEach(ticketElement => {
+            ticketElement.addEventListener('click', function() {
+                const ticketId = this.dataset.ticketId;
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'ticketId';
+                hiddenInput.value = ticketId;
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/view-ticket'; 
+                form.appendChild(hiddenInput);
+                document.body.appendChild(form);
+                form.submit();
+            });
         });
-        calendarContainer.appendChild(dayElement);
-    }
-}
 
-generateCalendarDays();
-    </script>
+    }
+
+    generateCalendarDays();
+    const prevMonthBtn = document.getElementById('prev-month');
+    const nextMonthBtn = document.getElementById('next-month');
+
+        // Event listener for previous month button
+        prevMonthBtn.addEventListener('click', function() {
+            // Decrement the current month
+            month--;
+            // Update the calendar display
+            updateCalendar();
+        });
+
+        // Event listener for next month button
+        nextMonthBtn.addEventListener('click', function() {
+            // Increment the current month
+            month++;
+            // Update the calendar display
+            updateCalendar();
+        });
+        function updateCalendar() {
+        // Adjust the month and year if necessary
+        if (month < 0) {
+            month = 11;
+            year--;
+        } else if (month > 11) {
+            month = 0;
+            year++;
+        }
+        generateCalendarDays();
+    }
+</script>
 </body>
 </html>

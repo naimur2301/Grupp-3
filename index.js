@@ -561,6 +561,25 @@ app.post('/submit-dates', (request, response) =>
     });
 });
 
+app.post('/view-ticket', (request, response) => {
+    const ticketId = request.body.ticketId;
+    console.log(ticketId);
+    db.get('SELECT * FROM tickets WHERE id = ?', [ticketId], (err, result) =>{
+        if(err)
+        {
+            console.log('err', err);
+        }
+        else
+        {
+            if(result)
+            {
+                console.log(result);
+            }
+            response.render('ticket', {ticket: result});
+        }
+    });
+});
+
 app.post('/delete', (req, res) => {
     const entryId = req.body.entryId;
     console.log(entryId);
@@ -605,4 +624,4 @@ app.post('/submit_profile', upload.single('file'), (request, response) =>
 });
 
 //hosts the website to local port 3000
-app.listen(process.env.PORT || 3001, () => console.log(`app avaiable on http://localhost:3000`));
+app.listen(process.env.PORT || 3000, () => console.log(`app avaiable on http://localhost:3000`));
