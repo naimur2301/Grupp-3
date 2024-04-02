@@ -1,23 +1,25 @@
 <!DOCTYPE html>
 <html lang= "en">
+      
 <head>
     <meta charset = "UTF-8">
     <meta name = "viewport" content = "width=device-width">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" />
     <title>Project</title>
-
     <style>
         body {
+            background-color: #cccccc;
             font-family: Courier, monospace;
             text-align: center;
+            background-image: url('/test.png');
+            background-size: cover;
         }
-        /* Add some basic styling for the form */
         form {
             max-width: 400px;
             margin: 0 auto;
         }
 
-        /* Style for input fields */
+        /* Style for input*/
         label {
             display: block;
             margin-bottom: 8px;
@@ -29,20 +31,30 @@
             margin-bottom: 16px;
             box-sizing: border-box;
         }
-
-        /* button {
-            padding: 10px;
-        } */
-        </style>
+        .login-container {
+            background-color: #f6f2f2;
+            width: 300px;
+            margin: 100px 150px 0;
+            margin-top: 75px; /* Adjust the top margin as needed */
+            padding: 20px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body>
-
+<div class="login-container">
     <h1>
         Login
     </h1>
     <a href="/">Home Page</a>
     <a href="/create_account.html">register</a>
     <a href="/create_admin.html">register as admin</a>
+<<<<<<< HEAD
+=======
+    <a href="/register_worker.html">register as worker</a>
+>>>>>>> 6397fdca54e0f0d7508ebf251a59b7551f6dc682
     <form action="/login" method="post">
         <label for="email">email:</label>
         <input type="text" id="email" name="email" required>
@@ -51,6 +63,6 @@
         <input type="password" id="password" name="password" required></textarea>
         <button type="submit">Submit</button>
     </form>
-
+</div>
 </body>
 </html>

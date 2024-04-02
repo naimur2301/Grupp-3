@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang= "en">
+<head>
+    <meta charset = "UTF-8">
+    <meta name = "viewport" content = "width=device-width">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" />
+    <title>Project</title>
+
+    <style>
+
+        .container {
+        display: flex;
+        justify-content: center;
+        }
+
+        body {
+            font-family: Courier, monospace;
+            text-align: center;
+        }
+
+        .cool-box {
+            width: 200px; /* Set your desired width */
+            height: 350px; /* Set your desired height */
+            margin: 10px; /* Add margin for spacing between boxes */
+            border: 1px solid #aba0a0;
+            background-color: #e3e9ec; /* Box background color */
+            color: #000000; /* Text color */
+            padding: 20px; /* Padding inside the box */
+            border-radius: 10px; /* Rounded corners */
+            text-align: center;
+}
+        </style>
+</head>
+<body>
+
+    <h1>
+        ADMIN GROUP VIEW
+    </h1>
+    <nav>
+        <% if (user) { %>
+            <p> Logged in as <%= user %>  <a href="/logout">logout</a></p>
+        <% } else { %>
+            <a href="/login.html">Login</a>
+        <% } %>
+        <a href="/admin">Home Page</a>
+    </nav>
+    </form>
+    <div>
+        <h2>buildings</h2>
+        <form action="/submit-groups" method="post">
+        <% if (buildings && user) { %>
+            <p>asdfaf</p>
+            <%buildings.forEach(building => { %>
+                <label><input type="checkbox" name="building" value="<%= building%>"> <%= building %></label>
+                <br>
+            <%});%>
+        <%}%>
+        <input type="submit" value="Submit">
+        </form>
+      </div>
+      
+</body>
+</html>
