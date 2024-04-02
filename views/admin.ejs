@@ -90,6 +90,9 @@
                                 <% if (ticket.progress == 2) { %>
                                     <p>completed</p>
                                 <% } %>
+                                <%if (ticket.progress > 2 ) {%>
+                                    <p>Scheduled for: <%=ticket.progress%> </p>
+                                <%%}>
                             <% } %>
                             <form action="/submit_status" method="post">
                                 <label for="status">Choose a status:</label>

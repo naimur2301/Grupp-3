@@ -87,14 +87,14 @@
                             <% if (ticket.progress !== undefined ) { %>
                                 <% if (ticket.progress == 0) { %>
                                     <p>submitted</p>
-                                <% } %>
-                                <% if (ticket.progress == 1) { %>
+                                <% } else if (ticket.progress == 1) { %>
                                     <!-- make this show the date that it's scheduled for once scheduling system complete-->
                                     <p>scheduled</p>
-                                <% } %>
-                                <% if (ticket.progress == 2) { %>
+                                <% } else if (ticket.progress == 2) { %>
                                     <p>completed</p>
-                                <% } %>
+                                <% }else{ %>
+                                    <p>Scheduled for: <%=ticket.progress%> </p>
+                                <%}%>
                                     <br>
                                     <button onclick="deleteEntry('<%= ticket.id %>')">close ticket</button>
                             <% } %>

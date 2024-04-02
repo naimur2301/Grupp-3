@@ -93,14 +93,10 @@
                 <nav>
                     <% if (user && profile.email == user) { %>
                         <a href="/">logout</a></p>
-                    <% } else if(profile.email == user) { %>
+                    <% } else { %>
                         <a href="/login.html">Login</a>
                     <% } %>
-                    <%if(profile.admin == 2 && profile.email == user){%>
-                        <a href ="/home_admin">home</a>
-                    <%}else{%>
-                        <a href = "home.html">home</a>
-                    <%}%>
+                    <a href = "javascript:history.back()"> back </a>
                 </nav>
             </div>
             </ul>

@@ -313,6 +313,28 @@ app.get('/logData', (req, res) =>
     db.all('SELECT ')
 });
 
+app.get('/home_worker', (request, response) => {
+    // Assuming user ID is stored in the session and available as request.session.userId
+    const userId = request.session.userId;
+
+    db.all('SELECT * FROM tickets WHERE worker = ?', [userId], (err, tickets) => {
+        if (err) {
+            console.error('Error fetching tickets:', err);
+            response.status(500).send('Internal server error');
+            return;
+        }
+
+        db.all('SELECT * FROM users WHERE email = ?', [userId], (err, workers) => {
+            if (err) {
+                console.error('Error fetching workers:', err);
+                response.status(500).send('Internal server error');
+                return;
+            }
+            console.log(tickets);
+            response.render('home_worker', { profile: workers[0], tickets: tickets });
+        });
+    });
+});
 
 //logs in, need to make sure this actually remembers who's logged in, pipe it to the tickets database later
 app.post('/login', (request, response) => 
@@ -349,7 +371,7 @@ app.post('/login', (request, response) =>
             else
             {
                 console.log('wrong password');
-                response.redirect('/home.html');
+                response.redirect('/');
             }
         } else 
         {
@@ -404,7 +426,7 @@ app.post('/register_worker', (request, response) =>
     const password = request.body.password;
     const email = request.body.email;
     const building = request.body.building;
-    const defaultImagePath = '/Users/eriksawander/prokect/Grupp-3/public/test.png'; // Replace with the actual path to your default image file
+    const defaultImagePath = '/Users/eriksawander/prokect/Grupp-3/public/test.png'; 
     const defaultImageBuffer = fs.readFileSync(defaultImagePath);
     db.get('SELECT * FROM users WHERE email = ?', [email], (err, row) => 
     {
@@ -580,6 +602,28 @@ app.post('/view-ticket', (request, response) => {
     });
 });
 
+app.post('/view-ticket-work', (request, response) => {
+    const ticketId = request.body.ticketId;
+    console.log(ticketId);
+    db.get('SELECT * FROM tickets WHERE id = ?', [ticketId], (err, result) =>{
+        if(err)
+        {
+            console.log('err', err);
+        }
+        else
+        {
+            if(result)
+            {
+                console.log(result);
+            }
+            response.render('worker_ticket', {ticket: result});
+        }
+    });
+});
+
+
+
+
 app.post('/delete', (req, res) => {
     const entryId = req.body.entryId;
     console.log(entryId);
@@ -607,7 +651,7 @@ app.post('/submit_status', (req, res) => {
     
         console.log(`Rows affected: ${this.changes}`);
     });
-    res.redirect('/admin');
+    //res.redirect('/');
 });
 
 app.post('/submit_profile', upload.single('file'), (request, response) => 
@@ -624,4 +668,4 @@ app.post('/submit_profile', upload.single('file'), (request, response) =>
 });
 
 //hosts the website to local port 3000
-app.listen(process.env.PORT || 3000, () => console.log(`app avaiable on http://localhost:3000`));
+app.listen(process.env.PORT || 3002, () => console.log(`app avaiable on http://localhost:3000`));
