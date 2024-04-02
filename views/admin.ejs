@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang= "en">
+<head>
+    <meta charset = "UTF-8">
+    <meta name = "viewport" content = "width=device-width">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" />
+    <title>Project</title>
+
+    <style>
+        .sidebar {
+            width: 250px; /* Adjust width as needed */
+            height: 100%; /* Make sidebar full height */
+            background-color: #f4f4f4;
+            position: fixed; /* Fix the sidebar position */
+            top: 0;
+            left: 0;
+            overflow-y: auto; /* Add scrollbar if content exceeds height */
+            padding: 20px;
+        }
+        .container {
+        display: flex;
+        justify-content: center;
+        }
+
+        body {
+            font-family: Courier, monospace;
+            text-align: center;
+        }
+
+        .cool-box {
+            overflow-x: auto; /* Add scrollbar if content exceeds height */
+            width: 200px; /* Set your desired width */
+            height: 350px; /* Set your desired height */
+            margin: 10px; /* Add margin for spacing between boxes */
+            border: 1px solid #aba0a0;
+            background-color: #e3e9ec; /* Box background color */
+            color: #000000; /* Text color */
+            padding: 20px; /* Padding inside the box */
+            border-radius: 10px; /* Rounded corners */
+            text-align: center;
+}
+        </style>
+</head>
+<body>
+
+    <h1>
+        ADMIN VIEW
+    </h1>
+    <div class="sidebar">
+    <form action="/submit-groups" method="post">
+        <% if (buildings && user) { %>
+            <p>Choose Buildings:</p>
+            <% buildings.forEach(building => { %>
+                <label><input type="checkbox" name="building" value="<%= building %>"> <%= building %></label>
+                <br>
+            <% }); %>
+            <button type="submit">Submit</button>
+        <% } %>
+    </form>
+    <a href = "/admin">CLEAR SELECTIONS</a>
+</div>
+    <nav>
+        <a href = '/home_admin'> home</a>
+    </nav>
+        <button type="submit">Log Data</button>
+    </form>
+    <div>
+        <h2>Tickets</h2>
+        <% if (tickets) { %>
+            <ul>
+            <div class = container>
+                <% tickets.forEach(ticket => { %>
+                        <div class="cool-box">
+                            <p><%= ticket.email %></p>
+                            <hr>
+                            <p><%= ticket.title %></p>
+                            <hr>
+                            <p><%= ticket.body %></p>
+                            <% if (ticket.image && user) { %>
+                            <img src="data:image/jpeg;base64, <%= Buffer.from(ticket.image).toString('base64') %>" alt="Description of the image" height = "200" >
+                            <% } %>
+                            <% if (ticket.progress !== undefined ) { %>
+                                <% if (ticket.progress == 0) { %>
+                                    <p>submitted</p>
+                                <% } %>
+                                <% if (ticket.progress == 1) { %>
+                                    <!-- make this show the date that it's scheduled for once scheduling system complete-->
+                                    <p>scheduled</p>
+                                <% } %>
+                                <% if (ticket.progress == 2) { %>
+                                    <p>completed</p>
+                                <% } %>
+                                <%if (ticket.progress > 2 ) {%>
+                                    <p>Scheduled for: <%=ticket.progress%> </p>
+                                <%%}>
+                            <% } %>
+                            <form action="/submit_status" method="post">
+                                <label for="status">Choose a status:</label>
+                                <select name="progress" id="progress">
+                                <option value="0">submitted</option>
+                                <option value="1">In progress</option>
+                                <option value="2">finished</option>
+                                </select>
+                                <input type="hidden" name="selectedId" value="<%= ticket.id %>">
+                                <br>
+                                <button type="submit">Submit</button>
+                                <button onclick="deleteEntry('<%= ticket.id %>')">close ticket</button>
+                            </form>
+                        </div>
+                <% }); %>
+            </div>
+            </ul>
+        <% } else { %>
+            <p>No tickets</p>
+        <% } %>
+      </div>
+      <script>
+        function deleteEntry(entryId) 
+        {
+            fetch('/delete',
+            {
+                method: 'POST',
+                headers: 
+                {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `entryId=${entryId}`,
+            })
+            .then(response => 
+            {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(message => 
+            {
+                alert(message);
+            })
+            .catch(error => 
+            {
+                console.error('There was a problem with the fetch operation:', error);
+            }
+            );
+            location.reload();
+        }
+    </script>
+</body>
+</html>
