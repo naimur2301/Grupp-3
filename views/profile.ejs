@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang= "en">
+<head>
+    <meta charset = "UTF-8">
+    <meta name = "viewport" content = "width=device-width">
+    <title>Project</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" />
+    <style>
+        #contentToShow {
+        display: none;
+        margin-top: 20px;
+        }
+
+
+        .user-icon {
+            right: 20px; /* Distance from the right */
+            z-index: 999; /* Ensure it's above other content */
+            display: block; /* Make the anchor tag a block element to set width and height */
+            width: 50px; /* Set width of the clickable image */
+            height: 50px; /* Set height of the clickable image */
+        }
+        .user-icon img {
+        width: 100%; /* Make the image fill the anchor tag */
+        height: 100%; /* Make the image fill the anchor tag */
+        border-radius: 50%; /* Make the image round */
+        }
+        .login-container {
+            margin: 0; /* Remove default margin */
+            text-align: left; /* Align text to the left within the container */
+            background-color: #f6f2f2;
+            width: 300px;
+            margin: 100px 150px 0;
+            margin-top: 75px; /* Adjust the top margin as needed */
+            padding: 20px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+        display: flex;
+        justify-content: center;
+        }
+
+        body {
+            background-color: #cccccc;
+            font-family: Courier, monospace;
+            text-align: center;
+            background-image: url("test.png");
+            background-size: cover;
+        }
+
+        .cool-box {
+            width: 200px; /* Set your desired width */
+            height: 350px; /* Set your desired height */
+            margin: 10px; /* Add margin for spacing between boxes */
+            border: 1px solid #aba0a0;
+            background-color: #e3e9ec; /* Box background color */
+            color: #000000; /* Text color */
+            padding: 20px; /* Padding inside the box */
+            border-radius: 10px; /* Rounded corners */
+            text-align: center;
+}
+        </style>
+</head>
+<body>
+
+    <h1>
+        Profil
+    </h1>
+    <div>
+        <% if (profile) { %>
+
+            <ul>
+            <div class="login-container">
+                <%if(profile.image){%>
+                <img id ="clickableImage" class="user-icon" src="data:image/jpeg;base64, <%= Buffer.from(profile.image).toString('base64') %>" alt="User Icon" style="cursor: pointer;">
+                <%}%>
+                <%if(user == profile.email){%>
+                <div id = "contentToShow">
+                    <form action="/submit_profile" method="post" enctype="multipart/form-data">
+                    <label for="file">Choose an image:</label>
+                    <input type="file" name="file" id="file" accept="image/*">
+                    <button type="submit">Submit</button>
+                    </form>
+                </div>
+                <%}%>
+                <p>Email: <%= profile.email %></p>
+                <%if(profile.admin != 2){%>
+                <p>Bygnad: <%= profile.building %></p>
+                <p>LGH: <%= profile.lgh %></p>
+                <%}%>
+                <nav>
+                    <% if (user && profile.email == user) { %>
+                        <a href="/">logout</a></p>
+                    <% } else { %>
+                        <a href="/login.html">Login</a>
+                    <% } %>
+                    <a href = "javascript:history.back()"> back </a>
+                </nav>
+            </div>
+            </ul>
+        <% } else { %>
+            <p>Not logged in</p>
+        <% } %>
+      </div>
+      <script>
+
+        // JavaScript to show content when the image is clicked
+        document.getElementById('clickableImage').addEventListener('click', function() {
+          var content = document.getElementById('contentToShow');
+          content.style.display = content.style.display === 'block' ? 'none' : 'block';
+        });
+        </script>
+</body>
+</html>

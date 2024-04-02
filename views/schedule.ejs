@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang= "en">
+      
+<head>
+    <meta charset = "UTF-8">
+    <meta name = "viewport" content = "width=device-width">
+
+    <title>Project</title>
+    <style>
+    .ticket {
+    cursor: pointer;
+}
+    .sidebar {
+            width: 250px; /* Adjust width as needed */
+            height: 100%; /* Make sidebar full height */
+            background-color: #f4f4f4;
+            /*position: fixed;  Fix the sidebar position */
+            top: 0;
+            left: 0;
+            overflow-y: auto; /* Add scrollbar if content exceeds height */
+            padding: 20px;
+        }
+        #calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 7 days */
+    gap: 10px;
+    }
+    .day {
+        border: 1px solid #ccc;
+        padding: 10px;
+
+    }
+        .user-icon {
+        right: 20px; /* Distance from the right */
+        z-index: 999; /* Ensure it's above other content */
+        display: block; /* Make the anchor tag a block element to set width and height */
+        width: 50px; /* Set width of the clickable image */
+        height: 50px; /* Set height of the clickable image */
+    }
+
+    .user-icon img {
+        width: 100%; /* Make the image fill the anchor tag */
+        height: 100%; /* Make the image fill the anchor tag */
+        border-radius: 50%; /* Make the image round */
+    }
+
+        .button-container {
+            display: flex;
+            justify-content: center; /* Center buttons horizontally */
+            margin-top: 200px; /* Add some space from the top */
+        }
+        
+
+        .button {
+            justify-content: center; /* Center buttons horizontally */
+            margin-top: 50px; /* Add some space from the top */
+            flex: 1; /* Each button takes equal width */
+            padding: 125px 20px;
+            border-radius: 30px;
+            margin: 10px;
+            font-size: 25px;
+            border: none;
+            background-color: #118b3e;
+            color: rgb(248, 248, 248);
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #2dd57e;
+        }   
+
+        body {
+            background-color: #f8f6f6;
+            font-family: Courier, monospace;
+            text-align: center;
+            background-size: cover;
+        }
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Style for input*/
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+        .login-container {
+            background-color: #f6f2f2;
+            width: 300px;
+            margin: 100px 150px 0;
+            margin-top: 75px; /* Adjust the top margin as needed */
+            padding: 20px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .parent-div{
+            padding: 5%;
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <h1>Schema</h1>
+    <div class="calendar-nav">
+        <button id="prev-month">Previous Month</button>
+        <span id="current-month">Month Year</span>
+        <button id="next-month">Next Month</button>
+    </div>
+    <section class="parent-div">
+        <div class="sidebar">
+            <form action="/submit-dates" method="post">
+                <% if (workers && tickets) { %>
+                    <p>Choose Dates and workers:</p>
+                    <label for="ticket">Choose an Option:</label>
+                    <select name="ticket" id="ticket">
+                    <% tickets.forEach(function(ticket) { %>
+                        <option value="<%= ticket.id %>"><%= ticket.title %></option>
+                    <% }); %>
+                    </select>
+                    <label for="worker">Choose an Option:</label>
+                    <select name="worker" id="worker">
+                    <% workers.forEach(function(worker) { %>
+                        <option value="<%= worker.email %>"><%= worker.email %></option>
+                    <% }); %>
+                    </select>
+                    <label for="date">Choose date:</label>
+                    <input type="date" id="date" name="date">
+                    <button type="button" id="viewTicketButton">View Ticket</button>
+                    <button type="submit">Submit</button> 
+                <% } %>
+            </form>
+            <a href="home_admin">home</a>
+        </div>
+        <div id="calendar"></div>
+    </section>
+<script>
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    let date = new Date(),
+            year = date.getFullYear(),
+            month = date.getMonth();
+    const currentMonthSpan = document.getElementById('current-month');
+    function generateCalendarDays() {
+
+        currentMonthSpan.textContent = months[month] + ' ' + year;
+        const calendarContainer = document.getElementById('calendar');
+        calendarContainer.innerHTML = ''; 
+        firstDay = new Date(year, month, 1).getDay(),
+        daysInMonth = new Date(year, month + 1, 0).getDate();
+        for (let i = 0; i < firstDay; i++) {
+            calendarContainer.innerHTML += '<div class="day"></div>'; // Empty cells for preceding days
+        }
+        for (let i = 1; i <= daysInMonth; i++) {
+            const dayElement = document.createElement('div');
+            dayElement.classList.add('day');
+            dayElement.textContent = i;
+            const ticketsForDay = <%- JSON.stringify(tickets) %>.filter(ticket => {
+                const ticketDate = new Date(ticket.progress);
+                return (
+                    ticketDate.getFullYear() === year &&
+                    ticketDate.getMonth() === month &&
+                    ticketDate.getDate() === i
+                );
+            });
+            ticketsForDay.forEach(ticket => {
+                const ticketElement = document.createElement('div');
+                ticketElement.classList.add('ticket');
+                ticketElement.textContent = ticket.title;
+                ticketElement.dataset.ticketId = ticket.id;
+                dayElement.appendChild(ticketElement);
+            });
+            calendarContainer.appendChild(dayElement);
+        }
+        const ticketSelect = document.getElementById('ticket');
+    const viewTicketButton = document.getElementById('viewTicketButton');
+    const ticketElements = document.querySelectorAll('.ticket');
+        viewTicketButton.addEventListener('click', function() {
+            // Get the selected ticket ID
+            const selectedTicketId = ticketSelect.value;
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'ticketId';
+            hiddenInput.value = selectedTicketId;
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/view-ticket'; 
+            form.appendChild(hiddenInput);
+            document.body.appendChild(form);
+            form.submit();
+        });
+        // Add click event listener to each ticket element
+        ticketElements.forEach(ticketElement => {
+            ticketElement.addEventListener('click', function() {
+                const ticketId = this.dataset.ticketId;
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'ticketId';
+                hiddenInput.value = ticketId;
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/view-ticket'; 
+                form.appendChild(hiddenInput);
+                document.body.appendChild(form);
+                form.submit();
+            });
+        });
+
+    }
+
+    generateCalendarDays();
+    const prevMonthBtn = document.getElementById('prev-month');
+    const nextMonthBtn = document.getElementById('next-month');
+
+        // Event listener for previous month button
+        prevMonthBtn.addEventListener('click', function() {
+            // Decrement the current month
+            month--;
+            // Update the calendar display
+            updateCalendar();
+        });
+
+        // Event listener for next month button
+        nextMonthBtn.addEventListener('click', function() {
+            // Increment the current month
+            month++;
+            // Update the calendar display
+            updateCalendar();
+        });
+        function updateCalendar() {
+        // Adjust the month and year if necessary
+        if (month < 0) {
+            month = 11;
+            year--;
+        } else if (month > 11) {
+            month = 0;
+            year++;
+        }
+        generateCalendarDays();
+    }
+</script>
+</body>
+</html>
