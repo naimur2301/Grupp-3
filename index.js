@@ -425,7 +425,6 @@ app.post('/register_worker', (request, response) =>
 {
     const password = request.body.password;
     const email = request.body.email;
-    const building = request.body.building;
     const defaultImagePath = '/Users/eriksawander/prokect/Grupp-3/public/test.png'; 
     const defaultImageBuffer = fs.readFileSync(defaultImagePath);
     db.get('SELECT * FROM users WHERE email = ?', [email], (err, row) => 
@@ -444,7 +443,7 @@ app.post('/register_worker', (request, response) =>
         } else 
         {
             console.log('User not found');
-            db.run('INSERT INTO users (password, email, building, admin, image) VALUES (?, ?, ?, ?, ?)', [password, email, building, 3, defaultImageBuffer], function (err) 
+            db.run('INSERT INTO users (password, email, admin, image) VALUES (?, ?, ?, ?)', [password, email, 3, defaultImageBuffer], function (err) 
             {
                 if (err) 
                 {
@@ -462,7 +461,6 @@ app.post('/register_admin', (request, response) =>
 {
     const password = request.body.password;
     const email = request.body.email;
-    const building = request.body.building;
     const defaultImagePath = '/Users/eriksawander/prokect/Grupp-3/public/test.png'; // Replace with the actual path to your default image file
     const defaultImageBuffer = fs.readFileSync(defaultImagePath);
     db.get('SELECT * FROM users WHERE email = ?', [email], (err, row) => 
@@ -481,7 +479,7 @@ app.post('/register_admin', (request, response) =>
         } else 
         {
             console.log('User not found');
-            db.run('INSERT INTO users (password, email, building, admin, image) VALUES (?, ?, ?, ?, ?)', [password, email, building, 2, defaultImageBuffer], function (err) 
+            db.run('INSERT INTO users (password, email, admin, image) VALUES (?, ?, ?, ?)', [password, email, 2, defaultImageBuffer], function (err) 
             {
                 if (err) 
                 {
