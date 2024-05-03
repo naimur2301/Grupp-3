@@ -44,28 +44,26 @@
 <body>
 
     <h1>
-        ADMIN VIEW
+        ADMINISTRATÖRSVY
     </h1>
     <div class="sidebar">
     <form action="/submit-groups" method="post">
         <% if (buildings && user) { %>
-            <p>Choose Buildings:</p>
+            <p>Filtrera byggnader:</p>
             <% buildings.forEach(building => { %>
                 <label><input type="checkbox" name="building" value="<%= building %>"> <%= building %></label>
                 <br>
             <% }); %>
-            <button type="submit">Submit</button>
+            <button type="submit">Skicka</button>
         <% } %>
     </form>
-    <a href = "/admin">CLEAR SELECTIONS</a>
+    <a href = "/admin">RADERA VAL</a>
 </div>
     <nav>
-        <a href = '/home_admin'> home</a>
+        <a href = '/home_admin'> hem</a>
     </nav>
-        <button type="submit">Log Data</button>
-    </form>
     <div>
-        <h2>Tickets</h2>
+        <h2>Felanmälan</h2>
         <% if (tickets) { %>
             <ul>
             <div class = container>
@@ -92,14 +90,14 @@
                                 <% } %>
                                 <%if (ticket.progress > 2 ) {%>
                                     <p>Scheduled for: <%=ticket.progress%> </p>
-                                <%%}>
+                                <%}%>
                             <% } %>
                             <form action="/submit_status" method="post">
                                 <label for="status">Choose a status:</label>
                                 <select name="progress" id="progress">
-                                <option value="0">submitted</option>
-                                <option value="1">In progress</option>
-                                <option value="2">finished</option>
+                                <option value="0">skickat</option>
+                                <option value="1">Pågående</option>
+                                <option value="2">avslutad</option>
                                 </select>
                                 <input type="hidden" name="selectedId" value="<%= ticket.id %>">
                                 <br>
@@ -111,7 +109,7 @@
             </div>
             </ul>
         <% } else { %>
-            <p>No tickets</p>
+            <p>Inga Felanmälan</p>
         <% } %>
       </div>
       <script>

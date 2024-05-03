@@ -69,11 +69,11 @@
 
             <ul>
             <div class="login-container">
-                    <p>renter: <%= ticket.email %>
-                    <p>building: <%= ticket.building %> </p>
-                    <p>title: <%= ticket.title %></p>
+                <p>email: <%= ticket.email %>
+                    <p>byggnad: <%= ticket.building %> </p>
+                    <p>titel: <%= ticket.title %></p>
                     <br>
-                    <p>body: <%= ticket.body %></p>
+                    <p>Textinnehåll: <%= ticket.body %></p>
                     <%if(ticket.image){%>
                         <img src="data:image/jpeg;base64, <%= Buffer.from(ticket.image).toString('base64') %>" alt="Description of the image" height = "200" >
                     <%}%>
@@ -95,9 +95,9 @@
                     <form action="/submit_status" method="post">
                         <label for="status">Choose a status:</label>
                         <select name="progress" id="progress">
-                        <option value="0">submitted</option>
-                        <option value="1">In progress</option>
-                        <option value="2">finished</option>
+                        <option value="0">skickat</option>
+                        <option value="1">Pågående</option>
+                        <option value="2">avslutad</option>
                         </select>
                         <input type="hidden" name="selectedId" value="<%= ticket.id %>">
                         <br>

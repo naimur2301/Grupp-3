@@ -5,7 +5,7 @@
     <meta charset = "UTF-8">
     <meta name = "viewport" content = "width=device-width">
 
-    <title>Project</title>
+    <title>Projekt</title>
     <style>
     .ticket {
     cursor: pointer;
@@ -119,26 +119,26 @@
         <div class="sidebar">
             <form action="/submit-dates" method="post">
                 <% if (workers && tickets) { %>
-                    <p>Choose Dates and workers:</p>
-                    <label for="ticket">Choose an Option:</label>
+                    <p>Välj datum och arbetare:</p>
+                    <label for="ticket">Välj ett alternativ:</label>
                     <select name="ticket" id="ticket">
                     <% tickets.forEach(function(ticket) { %>
                         <option value="<%= ticket.id %>"><%= ticket.title %></option>
                     <% }); %>
                     </select>
-                    <label for="worker">Choose an Option:</label>
+                    <label for="worker">Välj ett alternativ:</label>
                     <select name="worker" id="worker">
                     <% workers.forEach(function(worker) { %>
                         <option value="<%= worker.email %>"><%= worker.email %></option>
                     <% }); %>
                     </select>
-                    <label for="date">Choose date:</label>
+                    <label for="date">Välj datum:</label>
                     <input type="date" id="date" name="date">
-                    <button type="button" id="viewTicketButton">View Ticket</button>
-                    <button type="submit">Submit</button> 
+                    <button type="button" id="viewTicketButton">Visa Biljett</button>
+                    <button type="submit">Skicka</button> 
                 <% } %>
             </form>
-            <a href="home_admin">home</a>
+            <a href="home_admin">hem</a>
         </div>
         <div id="calendar"></div>
     </section>

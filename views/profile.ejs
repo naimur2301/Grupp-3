@@ -3,7 +3,7 @@
 <head>
     <meta charset = "UTF-8">
     <meta name = "viewport" content = "width=device-width">
-    <title>Project</title>
+    <title>Projekt</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" />
     <style>
         #contentToShow {
@@ -79,7 +79,7 @@
                 <%if(user == profile.email){%>
                 <div id = "contentToShow">
                     <form action="/submit_profile" method="post" enctype="multipart/form-data">
-                    <label for="file">Choose an image:</label>
+                    <label for="file">Bifoga en bild:</label>
                     <input type="file" name="file" id="file" accept="image/*">
                     <button type="submit">Submit</button>
                     </form>
@@ -87,16 +87,14 @@
                 <%}%>
                 <p>Email: <%= profile.email %></p>
                 <%if(profile.admin != 2){%>
-                <p>Bygnad: <%= profile.building %></p>
+                <p>Byggnad: <%= profile.building %></p>
                 <p>LGH: <%= profile.lgh %></p>
                 <%}%>
                 <nav>
                     <% if (user && profile.email == user) { %>
                         <a href="/">logout</a></p>
-                    <% } else { %>
-                        <a href="/login.html">Login</a>
-                    <% } %>
-                    <a href = "javascript:history.back()"> back </a>
+                    <%}%>
+                    <a href = "javascript:history.back()"> tillbaka </a>
                 </nav>
             </div>
             </ul>

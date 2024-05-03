@@ -75,9 +75,9 @@
         <img src="data:image/jpeg;base64, <%= Buffer.from(profile.image).toString('base64') %>" alt="User Icon">
     </a>
     <h1>
-        Submit form
+        Skicka Formulär
     </h1>
-    <a href="/home.html">Home Page</a>
+    <a href="/home.html">Hem</a>
 
     <form action="/submit_form" method="post" enctype="multipart/form-data">
         <label for="TITLE">TITLE:</label>
@@ -86,7 +86,7 @@
         <label for="body">BODY:</label>
         <textarea type="text" id="body" name="body" required></textarea>
 
-        <label for="file">Choose an image:</label>
+        <label for="file">Bifoga en bild:</label>
         <input type="file" name="file" id="file" accept="image/*">
 
         <button type="submit">Submit</button>
